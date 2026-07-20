@@ -353,6 +353,13 @@ let sheetResults=[];
 
 // ── NAV ──
 function showNav(tab) {
+  if (tab === 'supervisor') {
+    const pw = prompt('Enter supervisor password:');
+    if (pw !== 'JJWL2026') {
+      alert('Incorrect password.');
+      return;
+    }
+  }
   document.querySelectorAll('.nav-btn').forEach((b,i) => b.classList.toggle('active', (tab==='quiz'&&i===0)||(tab==='supervisor'&&i===1)));
   document.getElementById('quiz-area').style.display = tab==='quiz' ? '' : 'none';
   document.getElementById('supervisor-area').style.display = tab==='supervisor' ? '' : 'none';
