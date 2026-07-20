@@ -398,7 +398,16 @@ function renderQuestion() {
   const area = document.getElementById('options-area');
   area.innerHTML=''; revealed=false;
   document.getElementById('btn-next').style.display='none';
-  q.opts.forEach((opt,i) => {
+
+  // Shuffle options while tracking the correct answer's new index
+  const indices = q.opts.map((_,i) => i).sort(() => Math.random()-0.5);
+  const shuffledOpts = indices.map(i => q.opts[i]);
+  const newCorrect = indices.indexOf(q.ans);
+  // Store shuffled state on the question for use in selectOption
+  q._shuffledOpts = shuffledOpts;
+  q._shuffledAns = newCorrect;
+
+  shuffledOpts.forEach((opt,i) => {
     if (!opt||!opt.trim()) return;
     const btn = document.createElement('button');
     btn.className='option'; btn.textContent=opt;
@@ -410,13 +419,15 @@ function renderQuestion() {
 function selectOption(i) {
   if (revealed) return;
   revealed=true;
-  const correct = questions[currentQ].ans;
+  const q = questions[currentQ];
+  const correct = q._shuffledAns;
+  const opts = q._shuffledOpts;
   document.querySelectorAll('.option').forEach((b,idx) => {
     b.disabled=true;
     if (idx===correct) b.classList.add('correct');
     else if (idx===i) b.classList.add('incorrect');
   });
-  answers.push({ q:questions[currentQ].q, selected:i, correct, opts:questions[currentQ].opts });
+  answers.push({ q:q.q, selected:i, correct, opts });
   const nb = document.getElementById('btn-next');
   nb.style.display='block';
   nb.textContent = currentQ < questions.length-1 ? 'Next question' : 'See results';
